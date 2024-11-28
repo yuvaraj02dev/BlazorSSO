@@ -1,0 +1,38 @@
+﻿@page "/"
+@using SSOApplicationBlazor.Services
+@attribute [Authorize]
+@inject AuthService AuthService
+
+
+<PageTitle>Welcome</PageTitle>
+
+<div class="container">
+    <h1>Welcome to Blazor SSO App</h1>
+
+    @if (_isAuthenticated)
+    {
+        <div class="user-info">
+            <p>You are successfully authenticated.</p>
+        </div>
+    }
+    else
+    {
+        <p>Please log in to access the application.</p>
+    }
+</div>
+
+@code {
+    private bool _isAuthenticated = false;
+    private string _userName = string.Empty;
+    private IEnumerable<Claim> _userClaims = Enumerable.Empty<Claim>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isAuthenticated = await AuthService.IsUserAuthenticatedAsync();
+        if (_isAuthenticated)
+        {
+            _userName = await AuthService.GetUserNameAsync();
+            _userClaims = await AuthService.GetUserClaimsAsync();
+        }
+    }
+}
